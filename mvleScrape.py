@@ -6,7 +6,7 @@ with sync_playwright() as p:
     page = browser.new_page()
     page.goto("https://mvle4.mmsu.edu.ph/login/index.php")
     page.fill("input#username", "21-020385")
-    page.fill("input#password", "PASSWORD")
+    page.fill("input#password", "EEN9N5")
     page.click("button[type=submit]")
     page.is_visible("div#page-wrapper")
 
@@ -15,7 +15,22 @@ with sync_playwright() as p:
 
     cards = page.inner_html("div[data-region=card-deck]")
     soup = BeautifulSoup(cards, "html.parser")
-    courses = soup.find_all("span", {"class": "multiline"})
 
-    for course in courses:
-        print(course.text)
+    course_id_elements = soup.find_all(attrs={"data-course-id": True})
+    course_ids = set([element['data-course-id']
+                     for element in course_id_elements])
+
+    for course_id in course_ids:
+        page.goto("https://mvle4.mmsu.edu.ph/course/view.php?id="+course_id)
+        print("been to " + course_id)
+
+        page.is_visible("div#page-content")
+
+        topics = page.inner_html("ul.topics")
+        inSoup = BeautifulSoup(topics, "html.parser")
+
+        course_titles = inSoup.find_all(
+            "h3", {"data-for": "section_title"})
+
+        for course_title in course_titles:
+            print(course_title.text)
