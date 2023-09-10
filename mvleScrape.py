@@ -29,8 +29,28 @@ with sync_playwright() as p:
         topics = page.inner_html("ul.topics")
         inSoup = BeautifulSoup(topics, "html.parser")
 
+        head = page.inner_html("header#page-header")
+        headSoup = BeautifulSoup(head, "html.parser")
+
+        course_code = headSoup.find("h1", {"class": "h2"})
         course_titles = inSoup.find_all(
             "h3", {"data-for": "section_title"})
+        course_desc = inSoup.find_all("div", {"class": "activity-item"})
 
-        for course_title in course_titles:
-            print(course_title.text)
+        # Open a text file in write mode ('w')
+        with open('output.txt', 'a') as file:
+            file.write(course_code.text)
+            for x in range(len(course_titles)):
+                # Remove leading and trailing whitespace
+                title = course_titles[x].text.strip()
+                file.write(title + '\n')
+
+                if x < len(course_desc) and course_desc[x] is not None:
+                    # Remove leading and trailing whitespace
+                    description = course_desc[x].text.strip()
+                    # Replace multiple spaces and newlines with a single space
+                    description = ' '.join(description.split())
+                    file.write(description + '\n')
+                    file.write("\n")
+                else:
+                    file.write("Section does not have a course description\n")
