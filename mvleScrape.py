@@ -6,7 +6,7 @@ with sync_playwright() as p:
     page = browser.new_page()
     page.goto("https://mvle4.mmsu.edu.ph/login/index.php")
     page.fill("input#username", "21-020385")
-    page.fill("input#password", "EEN9N5")
+    page.fill("input#password", "PASSWORD")
     page.click("button[type=submit]")
     page.is_visible("div#page-wrapper")
 
